@@ -1,0 +1,25 @@
+{
+  "name": "opc-ua-simulator",
+  "version": "1.0.0",
+  "description": "OPC UA Server Simulator with CNC and Injection Euromap 77",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "opc-ua",
+    "simulator",
+    "cnc",
+    "injection",
+    "euromap77"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-opcua": "^2.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
