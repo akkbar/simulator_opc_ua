@@ -161,32 +161,38 @@ class InjectionMachine {
     this.heatingZones.forEach((zone) => {
       if (zone.enabled) {
         const diff = zone.setpoint - zone.actual;
-        if (Math.abs(diff) > 1) {
-          zone.actual += diff * 0.05; // Gradual temperature increase
+        if (Math.abs(diff) > 3) {
+          zone.actual += diff * 0.03 + this.getRandomValue(-0.4, 0.4);
         } else {
-          zone.actual = zone.setpoint;
+          zone.actual = zone.setpoint + this.getRandomValue(-1.5, 1.5);
         }
       } else {
-        zone.actual = Math.max(zone.actual - 0.2, 25); // Cooling down
+        zone.actual = Math.max(zone.actual - this.getRandomValue(0.1, 0.5), 25);
       }
     });
 
     // Nozzle
     if (this.nozzle.enabled) {
       const diff = this.nozzle.setpoint - this.nozzle.actual;
-      if (Math.abs(diff) > 1) {
-        this.nozzle.actual += diff * 0.05;
+      if (Math.abs(diff) > 3) {
+        this.nozzle.actual += diff * 0.03 + this.getRandomValue(-0.4, 0.4);
       } else {
-        this.nozzle.actual = this.nozzle.setpoint;
+        this.nozzle.actual = this.nozzle.setpoint + this.getRandomValue(-1.5, 1.5);
       }
+    } else {
+      this.nozzle.actual = Math.max(this.nozzle.actual - this.getRandomValue(0.1, 0.5), 25);
     }
 
     // Mold
     if (this.mold.enabled) {
       const diff = this.mold.setpoint - this.mold.actual;
-      if (Math.abs(diff) > 1) {
+      if (Math.abs(diff) > 2) {
         this.mold.actual += diff * 0.02;
+      } else {
+        this.mold.actual = this.mold.setpoint + this.getRandomValue(-0.5, 0.5);
       }
+    } else {
+      this.mold.actual = Math.max(this.mold.actual - this.getRandomValue(0.05, 0.2), 25);
     }
 
     // Screw
