@@ -69,6 +69,17 @@ npm run dev
 
 Node IDs use machine prefixes: `CNC1`-`CNC5`, `LATHE1`-`LATHE5`, and `INJ1`-`INJ5`.
 
+Status format:
+- CNC Milling and CNC Lathe `Status` is a `String`: `Running`, `Emergency`, `Down`, `Setup`, `Idle`, `Paused`, or `Disconnected`.
+- Injection `Status` is a `UInt32`:
+  - `1` = `Running`
+  - `2` = `Emergency`
+  - `3` = `Down`
+  - `4` = `Setup`
+  - `5` = `Idle`
+  - `6` = `Paused`
+  - `7` = `Disconnected`
+
 **CNC Milling**
 - `CNC1_Feedrate`
 - `CNC1_Spindle_Speed`
@@ -143,7 +154,7 @@ client yang memakai struktur lama.
 ```
 Objects/
 └── Injection_Machine
-    ├── Status                    (String)
+    ├── Status                    (UInt32)
     ├── Power                     (Boolean) - Writable
     ├── HeatingZones
     │   ├── Zone_1

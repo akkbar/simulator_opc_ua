@@ -305,8 +305,8 @@ class CNCMachine {
       name: this.name,
       machineType: this.machineType,
       programName: this.programName,
-      status: this.statusCode,
-      statusName: this.statusName,
+      status: this.statusName,
+      statusCode: this.statusCode,
       power: this.power,
       feedRate: this.feedRate,
       feedRateOverride: this.feedRateOverride,
@@ -343,8 +343,8 @@ class CNCMachine {
       goodParts: this.production.goodParts,
       badParts: this.production.badParts,
       efficiency: `${efficiency}%`,
-      status: this.statusCode,
-      statusName: this.statusName,
+      status: this.statusName,
+      statusCode: this.statusCode,
     });
   }
 
@@ -354,8 +354,8 @@ class CNCMachine {
   getErrorLog() {
     return JSON.stringify({
       timestamp: new Date().toISOString(),
-      machineStatus: this.statusCode,
-      machineStatusName: this.statusName,
+      machineStatus: this.statusName,
+      machineStatusCode: this.statusCode,
       errorCount: this.errors.length,
       warningCount: this.warnings.length,
       errors: this.errors,
@@ -370,8 +370,8 @@ class CNCMachine {
     return JSON.stringify({
       timestamp: new Date().toISOString(),
       machineName: this.name,
-      status: this.statusCode,
-      statusName: this.statusName,
+      status: this.statusName,
+      statusCode: this.statusCode,
       power: this.power,
       spindle: {
         speed: this.spindle.speed.toFixed(2),

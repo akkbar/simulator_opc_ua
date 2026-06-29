@@ -5,8 +5,18 @@
 class InjectionMachine {
   constructor(options = {}) {
     this.name = options.name || "Injection_Machine_001";
-    this.statuses = ["Running", "Emergency", "Down", "Setup", "Idle", "Paused", "Disconnected"];
-    this.status = "Idle";
+    this.statusMap = {
+      Running: 1,
+      Emergency: 2,
+      Down: 3,
+      Setup: 4,
+      Idle: 5,
+      Paused: 6,
+      Disconnected: 7,
+    };
+    this.statuses = Object.keys(this.statusMap);
+    this.statusName = "Idle";
+    this.statusCode = this.statusMap[this.statusName];
     this.power = options.autoStart ?? false;
     this.statusChangeIntervalMs = options.statusChangeIntervalMs || 5 * 60 * 1000;
     this.nextStatusChangeAt = Date.now() + this.statusChangeIntervalMs;
@@ -98,7 +108,7 @@ class InjectionMachine {
     this.warnings = [];
 
     if (this.power) {
-      this.status = "Running";
+      this.setStatus("Running");
       this.heatingZones.forEach((zone) => (zone.enabled = true));
       this.nozzle.enabled = true;
       this.mold.enabled = true;
@@ -113,7 +123,7 @@ class InjectionMachine {
     this.rotateStatusIfNeeded(now);
     this.rotateProductIfNeeded(now);
 
-    if (!this.power || this.status !== "Running") {
+    if (!this.power || this.statusName !== "Running") {
       this.injectionUnit.pressure = 0;
       this.injectionUnit.velocity = 0;
       this.clamping.force = 0;
@@ -207,12 +217,12 @@ class InjectionMachine {
    * Start production
    */
   startProduction() {
-    if (this.power && this.status !== "Running") {
+    if (this.power && this.statusName !== "Running") {
       // Enable all heating zones
       this.heatingZones.forEach((zone) => (zone.enabled = true));
       this.nozzle.enabled = true;
       this.mold.enabled = true;
-      this.status = "Running";
+      this.setStatus("Running");
     }
   }
 
@@ -220,7 +230,7 @@ class InjectionMachine {
    * Stop production
    */
   stopProduction() {
-    this.status = "Idle";
+    this.setStatus("Idle");
     this.heatingZones.forEach((zone) => (zone.enabled = false));
     this.nozzle.enabled = false;
     this.mold.enabled = false;
@@ -231,7 +241,7 @@ class InjectionMachine {
    */
   setPower(value) {
     this.power = value;
-    if (value && this.status !== "Running") {
+    if (value && this.statusName !== "Running") {
       this.startProduction();
     } else if (!value) {
       this.stopProduction();
@@ -244,8 +254,13 @@ class InjectionMachine {
   rotateStatusIfNeeded(now) {
     if (now < this.nextStatusChangeAt) return;
 
-    this.status = this.statuses[Math.floor(Math.random() * this.statuses.length)];
+    this.setStatus(this.statuses[Math.floor(Math.random() * this.statuses.length)]);
     this.nextStatusChangeAt = now + this.statusChangeIntervalMs;
+  }
+
+  setStatus(statusName) {
+    this.statusName = statusName;
+    this.statusCode = this.statusMap[statusName];
   }
 
   rotateProductIfNeeded(now) {
@@ -310,7 +325,7 @@ class InjectionMachine {
    */
   emergencyStop() {
     this.stopProduction();
-    this.status = "Emergency";
+    this.setStatus("Emergency");
     this.alarms.push({
       code: "A001",
       message: "Emergency Stop Activated",
@@ -324,7 +339,7 @@ class InjectionMachine {
   resetAlarms() {
     this.alarms = [];
     this.warnings = [];
-    this.status = "Idle";
+    this.setStatus("Idle");
   }
 
   /**
@@ -352,7 +367,8 @@ class InjectionMachine {
       name: this.name,
       productName: this.productName,
       moldName: this.moldName,
-      status: this.status,
+      status: this.statusCode,
+      statusName: this.statusName,
       power: this.power,
       machineStatus: this.machineStatus,
       heatingZones: this.heatingZones,
@@ -393,7 +409,8 @@ class InjectionMachine {
       averageCycleTime: this.production.cycleTimeAverage.toFixed(2),
       totalWeight: this.production.totalWeight.toFixed(2),
       efficiency: `${efficiency}%`,
-      status: this.status,
+      status: this.statusCode,
+      statusName: this.statusName,
     });
   }
 
@@ -431,7 +448,8 @@ class InjectionMachine {
   getAlarmLog() {
     return JSON.stringify({
       timestamp: new Date().toISOString(),
-      machineStatus: this.status,
+      machineStatus: this.statusCode,
+      machineStatusName: this.statusName,
       alarmCount: this.alarms.length,
       warningCount: this.warnings.length,
       alarms: this.alarms,
@@ -446,7 +464,8 @@ class InjectionMachine {
     return JSON.stringify({
       timestamp: new Date().toISOString(),
       machineName: this.name,
-      status: this.status,
+      status: this.statusCode,
+      statusName: this.statusName,
       power: this.power,
       cycleInfo: {
         cycleCount: this.machineStatus.cycleCount,

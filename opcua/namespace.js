@@ -143,7 +143,7 @@ function addInjectionMachine(namespace, rootFolder, machine, prefix) {
     browseName: machine.name,
   });
 
-  addScalar(namespace, folder, prefix, "Status", "String", () => machine.status);
+  addScalar(namespace, folder, prefix, "Status", "UInt32", () => machine.statusCode);
   addScalar(namespace, folder, prefix, "Power", "Boolean", () => machine.power, true, (value) => machine.setPower(Boolean(value)));
   addScalar(namespace, folder, prefix, "ProductName", "String", () => machine.productName);
   addScalar(namespace, folder, prefix, "MoldName", "String", () => machine.moldName);
@@ -220,7 +220,7 @@ function addCuttingMachine(namespace, rootFolder, machine, prefix) {
     browseName: machine.name,
   });
 
-  addScalar(namespace, folder, prefix, "Status", "UInt32", () => machine.statusCode);
+  addScalar(namespace, folder, prefix, "Status", "String", () => machine.statusName);
   addScalar(namespace, folder, prefix, "Power", "Boolean", () => machine.power, true, (value) => machine.setPower(Boolean(value)));
   addScalar(namespace, folder, prefix, "MachineType", "String", () => machine.machineType);
   addScalar(namespace, folder, prefix, "ProgramName", "String", () => machine.programName);
@@ -331,7 +331,7 @@ function addJsonMethod(namespace, methodsFolder, prefix, browseName, outputName,
 }
 
 function updateInjectionVariables(addressSpace, namespaceIndex, machine, prefix) {
-  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Status`, machine.status);
+  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Status`, machine.statusCode);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Power`, machine.power);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_ProductName`, machine.productName);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_MoldName`, machine.moldName);
@@ -358,7 +358,7 @@ function updateInjectionVariables(addressSpace, namespaceIndex, machine, prefix)
 }
 
 function updateCuttingVariables(addressSpace, namespaceIndex, machine, prefix) {
-  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Status`, machine.statusCode);
+  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Status`, machine.statusName);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Power`, machine.power);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_ProgramName`, machine.programName);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Feedrate`, machine.feedRate);
