@@ -30,7 +30,7 @@ class InjectionMachine {
       operatingMode: "Auto", // Auto, Manual, Service
       cycleCount: 0,
       cycleTime: this.partCountIntervalMs / 1000,
-      lastCycleTime: 0,
+      lastCycleTime: this.partCountIntervalMs / 1000,
     };
 
     // Heating zones (Euromap 77 standard - up to 10 zones)
@@ -62,6 +62,7 @@ class InjectionMachine {
       velocity: 0, // mm/s
       pressure: 0, // bar
       position: 0, // mm
+      cushion: 0, // mm
       maxPressure: 2000,
       maxVelocity: 500,
     };
@@ -130,6 +131,7 @@ class InjectionMachine {
       this.injectionUnit.pressure = this.getRandomValue(500, 1800);
       this.injectionUnit.velocity = this.getRandomValue(50, 200);
       this.injectionUnit.position = progress * 100;
+      this.injectionUnit.cushion = this.getRandomValue(2, 8);
       this.clamping.isOpen = false;
       this.clamping.position = 0;
       this.mold.openPosition = 0;
@@ -137,10 +139,12 @@ class InjectionMachine {
       // Holding phase
       this.injectionUnit.pressure = this.getRandomValue(100, 300);
       this.injectionUnit.velocity = 0;
+      this.injectionUnit.cushion = this.getRandomValue(3, 9);
     } else if (progress < 1) {
       // Cooling phase
       this.injectionUnit.pressure = 0;
       this.injectionUnit.velocity = 0;
+      this.injectionUnit.cushion = this.getRandomValue(3, 9);
     } else {
       // End of cycle
       this.incrementPartCount(now);
@@ -454,6 +458,7 @@ class InjectionMachine {
         maxPressure: this.injectionUnit.maxPressure,
         velocity: this.injectionUnit.velocity.toFixed(2),
         position: this.injectionUnit.position.toFixed(2),
+        cushion: this.injectionUnit.cushion.toFixed(2),
       },
       clamping: {
         force: this.clamping.force.toFixed(2),

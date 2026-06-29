@@ -45,11 +45,14 @@ class CNCMachine {
       loadPercentage: 0,
     };
 
+    this.feedRate = 0;
+    this.feedRateOverride = 100;
+
     // Axes
     this.axes = {
-      X: { position: 0, feedRate: 0, minPos: -500, maxPos: 500, isMoving: false },
-      Y: { position: 0, feedRate: 0, minPos: -500, maxPos: 500, isMoving: false },
-      Z: { position: 0, feedRate: 0, minPos: -300, maxPos: 0, isMoving: false },
+      X: { position: 0, feedRate: 0, loadPercentage: 0, minPos: -500, maxPos: 500, isMoving: false },
+      Y: { position: 0, feedRate: 0, loadPercentage: 0, minPos: -500, maxPos: 500, isMoving: false },
+      Z: { position: 0, feedRate: 0, loadPercentage: 0, minPos: -300, maxPos: 0, isMoving: false },
     };
 
     // Tool
@@ -124,6 +127,11 @@ class CNCMachine {
     this.axes.X.feedRate = this.getRandomValue(120, 1200);
     this.axes.Y.feedRate = this.getRandomValue(120, 1200);
     this.axes.Z.feedRate = this.getRandomValue(80, 600);
+    this.axes.X.loadPercentage = this.getRandomValue(20, 80);
+    this.axes.Y.loadPercentage = this.getRandomValue(20, 80);
+    this.axes.Z.loadPercentage = this.getRandomValue(15, 70);
+    this.feedRate = Math.max(this.axes.X.feedRate, this.axes.Y.feedRate, this.axes.Z.feedRate);
+    this.feedRateOverride = this.getRandomValue(85, 120);
     this.spindle.speed = this.getRandomValue(this.spindle.maxSpeed * 0.45, this.spindle.maxSpeed);
     this.spindle.temperature = this.getRandomValue(45, 78);
     this.spindle.loadPercentage = this.getRandomValue(30, 95);
@@ -137,6 +145,11 @@ class CNCMachine {
     this.axes.X.feedRate = this.getRandomValue(10, 180);
     this.axes.Y.feedRate = this.getRandomValue(10, 180);
     this.axes.Z.feedRate = this.getRandomValue(5, 100);
+    this.axes.X.loadPercentage = this.getRandomValue(3, 25);
+    this.axes.Y.loadPercentage = this.getRandomValue(3, 25);
+    this.axes.Z.loadPercentage = this.getRandomValue(3, 20);
+    this.feedRate = Math.max(this.axes.X.feedRate, this.axes.Y.feedRate, this.axes.Z.feedRate);
+    this.feedRateOverride = this.getRandomValue(40, 90);
     this.spindle.speed = this.getRandomValue(300, this.spindle.maxSpeed * 0.25);
     this.spindle.temperature = this.getRandomValue(30, 48);
     this.spindle.loadPercentage = this.getRandomValue(5, 25);
@@ -147,6 +160,11 @@ class CNCMachine {
     this.axes.X.feedRate = this.getRandomValue(0, 8);
     this.axes.Y.feedRate = this.getRandomValue(0, 8);
     this.axes.Z.feedRate = this.getRandomValue(0, 5);
+    this.axes.X.loadPercentage = this.getRandomValue(0, 2);
+    this.axes.Y.loadPercentage = this.getRandomValue(0, 2);
+    this.axes.Z.loadPercentage = this.getRandomValue(0, 2);
+    this.feedRate = Math.max(this.axes.X.feedRate, this.axes.Y.feedRate, this.axes.Z.feedRate);
+    this.feedRateOverride = this.getRandomValue(95, 105);
     this.spindle.speed = this.getRandomValue(0, 20);
     this.spindle.temperature = this.getRandomValue(28, 38);
     this.spindle.loadPercentage = this.getRandomValue(0, 3);
@@ -159,6 +177,11 @@ class CNCMachine {
     this.axes.X.feedRate = 0;
     this.axes.Y.feedRate = 0;
     this.axes.Z.feedRate = 0;
+    this.axes.X.loadPercentage = 0;
+    this.axes.Y.loadPercentage = 0;
+    this.axes.Z.loadPercentage = 0;
+    this.feedRate = 0;
+    this.feedRateOverride = 0;
     this.spindle.temperature = Math.max(this.spindle.temperature - this.getRandomValue(0.1, 0.4), 25);
   }
 
@@ -285,6 +308,8 @@ class CNCMachine {
       status: this.statusCode,
       statusName: this.statusName,
       power: this.power,
+      feedRate: this.feedRate,
+      feedRateOverride: this.feedRateOverride,
       spindle: this.spindle,
       axes: this.axes,
       tool: this.tool,
@@ -359,16 +384,21 @@ class CNCMachine {
         X: {
           position: this.axes.X.position.toFixed(2),
           feedRate: this.axes.X.feedRate.toFixed(2),
+          load: this.axes.X.loadPercentage.toFixed(2),
         },
         Y: {
           position: this.axes.Y.position.toFixed(2),
           feedRate: this.axes.Y.feedRate.toFixed(2),
+          load: this.axes.Y.loadPercentage.toFixed(2),
         },
         Z: {
           position: this.axes.Z.position.toFixed(2),
           feedRate: this.axes.Z.feedRate.toFixed(2),
+          load: this.axes.Z.loadPercentage.toFixed(2),
         },
       },
+      feedRate: this.feedRate.toFixed(2),
+      feedRateOverride: this.feedRateOverride.toFixed(2),
     });
   }
 }

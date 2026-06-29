@@ -65,6 +65,37 @@ npm run dev
 
 ## OPC UA Tag Tree Structure
 
+### Minimum trial tags
+
+Node IDs use machine prefixes: `CNC1`-`CNC5`, `LATHE1`-`LATHE5`, and `INJ1`-`INJ5`.
+
+**CNC Milling**
+- `CNC1_Feedrate`
+- `CNC1_Spindle_Speed`
+- `CNC1_Spindle_Temperature`
+- `CNC1_Spindle_LoadPercentage`
+- `CNC1_Axis_X_LoadPercentage`
+- `CNC1_Axis_Y_LoadPercentage`
+- `CNC1_Axis_Z_LoadPercentage`
+- `CNC1_FeedrateOverride`
+
+**CNC Lathe**
+- `LATHE1_Feedrate`
+- `LATHE1_Spindle_Speed`
+- `LATHE1_Spindle_Temperature`
+- `LATHE1_Spindle_LoadPercentage`
+- `LATHE1_Axis_X_LoadPercentage`
+- `LATHE1_Axis_Z_LoadPercentage`
+- `LATHE1_FeedrateOverride`
+
+**Injection**
+- `INJ1_MoldName`
+- `INJ1_Clamping_Force`
+- `INJ1_InjectionUnit_Cushion`
+- `INJ1_BarrelTemp_Zone_1` through `INJ1_BarrelTemp_Zone_4`
+- `INJ1_Nozzle_Actual`
+- `INJ1_Production_LastCycleTime`
+
 ### CNC Machine
 
 ```

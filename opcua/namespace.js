@@ -168,6 +168,15 @@ function addInjectionMachine(namespace, rootFolder, machine, prefix) {
     });
   });
 
+  const barrelTempFolder = namespace.addFolder(folder, {
+    nodeId: `ns=${namespace.index};s=${prefix}_BarrelTemp`,
+    browseName: "BarrelTemp",
+  });
+
+  machine.heatingZones.slice(0, 4).forEach((zone) => {
+    addScalar(namespace, barrelTempFolder, prefix, `BarrelTemp_Zone_${zone.zone}`, "Double", () => zone.actual);
+  });
+
   const nozzleFolder = namespace.addFolder(folder, {
     nodeId: `ns=${namespace.index};s=${prefix}_Nozzle`,
     browseName: "Nozzle",
@@ -183,6 +192,7 @@ function addInjectionMachine(namespace, rootFolder, machine, prefix) {
   });
   addScalar(namespace, injectionUnitFolder, prefix, "InjectionUnit_Pressure", "Double", () => machine.injectionUnit.pressure);
   addScalar(namespace, injectionUnitFolder, prefix, "InjectionUnit_Velocity", "Double", () => machine.injectionUnit.velocity);
+  addScalar(namespace, injectionUnitFolder, prefix, "InjectionUnit_Cushion", "Double", () => machine.injectionUnit.cushion);
 
   const clampingFolder = namespace.addFolder(folder, {
     nodeId: `ns=${namespace.index};s=${prefix}_Clamping`,
@@ -199,6 +209,7 @@ function addInjectionMachine(namespace, rootFolder, machine, prefix) {
   addScalar(namespace, productionFolder, prefix, "Production_GoodParts", "UInt32", () => machine.production.goodParts);
   addScalar(namespace, productionFolder, prefix, "Production_BadParts", "UInt32", () => machine.production.badParts);
   addScalar(namespace, productionFolder, prefix, "Production_CycleTime", "Double", () => machine.production.cycleTimeAverage);
+  addScalar(namespace, productionFolder, prefix, "Production_LastCycleTime", "Double", () => machine.machineStatus.lastCycleTime);
 
   addInjectionMethods(namespace, folder, machine, prefix);
 }
@@ -213,6 +224,8 @@ function addCuttingMachine(namespace, rootFolder, machine, prefix) {
   addScalar(namespace, folder, prefix, "Power", "Boolean", () => machine.power, true, (value) => machine.setPower(Boolean(value)));
   addScalar(namespace, folder, prefix, "MachineType", "String", () => machine.machineType);
   addScalar(namespace, folder, prefix, "ProgramName", "String", () => machine.programName);
+  addScalar(namespace, folder, prefix, "Feedrate", "Double", () => machine.feedRate);
+  addScalar(namespace, folder, prefix, "FeedrateOverride", "Double", () => machine.feedRateOverride);
 
   const spindleFolder = namespace.addFolder(folder, {
     nodeId: `ns=${namespace.index};s=${prefix}_Spindle`,
@@ -233,6 +246,7 @@ function addCuttingMachine(namespace, rootFolder, machine, prefix) {
     const axisNode = addScalar(namespace, axesFolder, prefix, `Axis_${axis}`, "Double", () => machine.axes[axis].position);
     addScalar(namespace, axisNode, prefix, `Axis_${axis}_Position`, "Double", () => machine.axes[axis].position);
     addScalar(namespace, axisNode, prefix, `Axis_${axis}_FeedRate`, "Double", () => machine.axes[axis].feedRate);
+    addScalar(namespace, axisNode, prefix, `Axis_${axis}_LoadPercentage`, "Double", () => machine.axes[axis].loadPercentage);
   });
 
   const productionFolder = namespace.addFolder(folder, {
@@ -326,22 +340,29 @@ function updateInjectionVariables(addressSpace, namespaceIndex, machine, prefix)
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Zone_${zone.zone}_Actual`, zone.actual);
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Zone_${zone.zone}_Enabled`, zone.enabled);
   });
+  machine.heatingZones.slice(0, 4).forEach((zone) => {
+    updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_BarrelTemp_Zone_${zone.zone}`, zone.actual);
+  });
 
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Nozzle_Actual`, machine.nozzle.actual);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_InjectionUnit_Pressure`, machine.injectionUnit.pressure);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_InjectionUnit_Velocity`, machine.injectionUnit.velocity);
+  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_InjectionUnit_Cushion`, machine.injectionUnit.cushion);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Clamping_Force`, machine.clamping.force);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Clamping_IsOpen`, machine.clamping.isOpen);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Production_TotalCycles`, machine.production.totalCycles);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Production_GoodParts`, machine.production.goodParts);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Production_BadParts`, machine.production.badParts);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Production_CycleTime`, machine.production.cycleTimeAverage);
+  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Production_LastCycleTime`, machine.machineStatus.lastCycleTime);
 }
 
 function updateCuttingVariables(addressSpace, namespaceIndex, machine, prefix) {
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Status`, machine.statusCode);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Power`, machine.power);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_ProgramName`, machine.programName);
+  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Feedrate`, machine.feedRate);
+  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_FeedrateOverride`, machine.feedRateOverride);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Spindle_Speed`, machine.spindle.speed);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Spindle_Temperature`, machine.spindle.temperature);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Spindle_IsRunning`, machine.spindle.isRunning);
@@ -351,6 +372,7 @@ function updateCuttingVariables(addressSpace, namespaceIndex, machine, prefix) {
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}`, machine.axes[axis].position);
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}_Position`, machine.axes[axis].position);
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}_FeedRate`, machine.axes[axis].feedRate);
+    updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}_LoadPercentage`, machine.axes[axis].loadPercentage);
   });
 
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Production_TotalParts`, machine.production.totalParts);
