@@ -88,38 +88,78 @@ class CNCMachine {
     this.rotateStatusIfNeeded(now);
     this.rotateProgramIfNeeded(now);
 
-    if (!this.power || this.statusName !== "Running") {
-      this.spindle.isRunning = false;
-      this.spindle.speed = 0;
-      this.spindle.loadPercentage = 0;
-      this.axes.X.feedRate = 0;
-      this.axes.Y.feedRate = 0;
-      this.axes.Z.feedRate = 0;
+    if (!this.power || this.statusName === "Disconnected") {
+      this.applyStoppedValues();
       return;
     }
 
-    this.spindle.isRunning = true;
+    switch (this.statusName) {
+      case "Running":
+        this.applyRunningValues();
+        break;
+      case "Setup":
+        this.applySetupValues();
+        break;
+      case "Paused":
+      case "Idle":
+        this.applyIdleValues();
+        break;
+      case "Emergency":
+      case "Down":
+      default:
+        this.applyStoppedValues();
+        break;
+    }
 
-    // Simulasi gerakan acak pada axes
+    if (this.statusName === "Running" && now >= this.nextPartCountAt) {
+      this.incrementPartCount(now);
+    }
+  }
+
+  applyRunningValues() {
+    this.spindle.isRunning = true;
     this.axes.X.position = this.getRandomValue(this.axes.X.minPos, this.axes.X.maxPos);
     this.axes.Y.position = this.getRandomValue(this.axes.Y.minPos, this.axes.Y.maxPos);
     this.axes.Z.position = this.getRandomValue(this.axes.Z.minPos, 0);
+    this.axes.X.feedRate = this.getRandomValue(120, 1200);
+    this.axes.Y.feedRate = this.getRandomValue(120, 1200);
+    this.axes.Z.feedRate = this.getRandomValue(80, 600);
+    this.spindle.speed = this.getRandomValue(this.spindle.maxSpeed * 0.45, this.spindle.maxSpeed);
+    this.spindle.temperature = this.getRandomValue(45, 78);
+    this.spindle.loadPercentage = this.getRandomValue(30, 95);
+  }
 
-    // Simulasi feed rate
-    this.axes.X.feedRate = this.getRandomValue(0, 500);
-    this.axes.Y.feedRate = this.getRandomValue(0, 500);
-    this.axes.Z.feedRate = this.getRandomValue(0, 300);
+  applySetupValues() {
+    this.spindle.isRunning = true;
+    this.axes.X.position = this.getRandomValue(this.axes.X.minPos * 0.2, this.axes.X.maxPos * 0.2);
+    this.axes.Y.position = this.getRandomValue(this.axes.Y.minPos * 0.2, this.axes.Y.maxPos * 0.2);
+    this.axes.Z.position = this.getRandomValue(-80, 0);
+    this.axes.X.feedRate = this.getRandomValue(10, 180);
+    this.axes.Y.feedRate = this.getRandomValue(10, 180);
+    this.axes.Z.feedRate = this.getRandomValue(5, 100);
+    this.spindle.speed = this.getRandomValue(300, this.spindle.maxSpeed * 0.25);
+    this.spindle.temperature = this.getRandomValue(30, 48);
+    this.spindle.loadPercentage = this.getRandomValue(5, 25);
+  }
 
-    // Update spindle speed dan temperature
-    if (this.spindle.isRunning) {
-      this.spindle.speed = this.getRandomValue(this.spindle.maxSpeed * 0.7, this.spindle.maxSpeed);
-      this.spindle.temperature = this.getRandomValue(60, 78);
-      this.spindle.loadPercentage = this.getRandomValue(30, 95);
-    }
+  applyIdleValues() {
+    this.spindle.isRunning = false;
+    this.axes.X.feedRate = this.getRandomValue(0, 8);
+    this.axes.Y.feedRate = this.getRandomValue(0, 8);
+    this.axes.Z.feedRate = this.getRandomValue(0, 5);
+    this.spindle.speed = this.getRandomValue(0, 20);
+    this.spindle.temperature = this.getRandomValue(28, 38);
+    this.spindle.loadPercentage = this.getRandomValue(0, 3);
+  }
 
-    if (now >= this.nextPartCountAt) {
-      this.incrementPartCount(now);
-    }
+  applyStoppedValues() {
+    this.spindle.isRunning = false;
+    this.spindle.speed = 0;
+    this.spindle.loadPercentage = 0;
+    this.axes.X.feedRate = 0;
+    this.axes.Y.feedRate = 0;
+    this.axes.Z.feedRate = 0;
+    this.spindle.temperature = Math.max(this.spindle.temperature - this.getRandomValue(0.1, 0.4), 25);
   }
 
   rotateProgramIfNeeded(now) {
