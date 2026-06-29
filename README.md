@@ -81,7 +81,7 @@ Status format:
   - `7` = `Disconnected`
 
 **CNC Milling**
-- `CNC1_Feedrate`
+- `CNC1_FeedRate` (overall feedrate; alias lama `CNC1_Feedrate` tetap tersedia)
 - `CNC1_Spindle_Speed`
 - `CNC1_Spindle_Temperature`
 - `CNC1_Spindle_LoadPercentage`
@@ -91,7 +91,7 @@ Status format:
 - `CNC1_FeedrateOverride`
 
 **CNC Lathe**
-- `LATHE1_Feedrate`
+- `LATHE1_FeedRate` (overall feedrate; alias lama `LATHE1_Feedrate` tetap tersedia)
 - `LATHE1_Spindle_Speed`
 - `LATHE1_Spindle_Temperature`
 - `LATHE1_Spindle_LoadPercentage`

@@ -225,6 +225,7 @@ function addCuttingMachine(namespace, rootFolder, machine, prefix) {
   addScalar(namespace, folder, prefix, "MachineType", "String", () => machine.machineType);
   addScalar(namespace, folder, prefix, "ProgramName", "String", () => machine.programName);
   addScalar(namespace, folder, prefix, "Feedrate", "Double", () => machine.feedRate);
+  addScalar(namespace, folder, prefix, "FeedRate", "Double", () => machine.feedRate);
   addScalar(namespace, folder, prefix, "FeedrateOverride", "Double", () => machine.feedRateOverride);
 
   const spindleFolder = namespace.addFolder(folder, {
@@ -362,6 +363,7 @@ function updateCuttingVariables(addressSpace, namespaceIndex, machine, prefix) {
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Power`, machine.power);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_ProgramName`, machine.programName);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Feedrate`, machine.feedRate);
+  updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_FeedRate`, machine.feedRate);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_FeedrateOverride`, machine.feedRateOverride);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Spindle_Speed`, machine.spindle.speed);
   updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Spindle_Temperature`, machine.spindle.temperature);
