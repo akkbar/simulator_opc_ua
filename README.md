@@ -85,9 +85,9 @@ Status format:
 - `CNC1_Spindle_Speed`
 - `CNC1_Spindle_Temperature`
 - `CNC1_Spindle_LoadPercentage`
-- `CNC1_Axis_X_LoadPercentage`
-- `CNC1_Axis_Y_LoadPercentage`
-- `CNC1_Axis_Z_LoadPercentage`
+- `CNC1_Axis_X_Load`
+- `CNC1_Axis_Y_Load`
+- `CNC1_Axis_Z_Load`
 - `CNC1_FeedrateOverride`
 
 **CNC Lathe**
@@ -95,8 +95,8 @@ Status format:
 - `LATHE1_Spindle_Speed`
 - `LATHE1_Spindle_Temperature`
 - `LATHE1_Spindle_LoadPercentage`
-- `LATHE1_Axis_X_LoadPercentage`
-- `LATHE1_Axis_Z_LoadPercentage`
+- `LATHE1_Axis_X_Load`
+- `LATHE1_Axis_Z_Load`
 - `LATHE1_FeedrateOverride`
 
 **Injection**

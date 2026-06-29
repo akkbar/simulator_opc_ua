@@ -247,6 +247,7 @@ function addCuttingMachine(namespace, rootFolder, machine, prefix) {
     const axisNode = addScalar(namespace, axesFolder, prefix, `Axis_${axis}`, "Double", () => machine.axes[axis].position);
     addScalar(namespace, axisNode, prefix, `Axis_${axis}_Position`, "Double", () => machine.axes[axis].position);
     addScalar(namespace, axisNode, prefix, `Axis_${axis}_FeedRate`, "Double", () => machine.axes[axis].feedRate);
+    addScalar(namespace, axisNode, prefix, `Axis_${axis}_Load`, "Double", () => machine.axes[axis].loadPercentage);
     addScalar(namespace, axisNode, prefix, `Axis_${axis}_LoadPercentage`, "Double", () => machine.axes[axis].loadPercentage);
   });
 
@@ -374,6 +375,7 @@ function updateCuttingVariables(addressSpace, namespaceIndex, machine, prefix) {
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}`, machine.axes[axis].position);
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}_Position`, machine.axes[axis].position);
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}_FeedRate`, machine.axes[axis].feedRate);
+    updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}_Load`, machine.axes[axis].loadPercentage);
     updateVariableValue(addressSpace, `ns=${namespaceIndex};s=${prefix}_Axis_${axis}_LoadPercentage`, machine.axes[axis].loadPercentage);
   });
 
